@@ -1,6 +1,8 @@
 import datetime
 import inspect
 import json
+from enum import Enum
+
 
 from kefir.exceptions import (
     NeedReprException,
@@ -103,6 +105,8 @@ class BaseKefir:
                 if not field.startswith("_") and item is not ignore:
                     if item is None or isinstance(item, (int, str, bool, dict, float)):
                         dct[field] = item
+                    elif isinstance(item, Enum):
+                        dct[field] = item.value
                     elif isinstance(item, datetime.datetime):
                         dct[field] = item.strftime(self.datetime_format)
                     else:

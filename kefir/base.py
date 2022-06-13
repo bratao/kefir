@@ -12,11 +12,12 @@ from kefir.exceptions import (
 
 
 class BaseKefir:
-    def __init__(self, represents=None, datetime_format="%d.%m.%Y", used="flask"):
+    def __init__(self, represents=None, datetime_format="%Y/%m/%d", used="flask"):
         if represents is None:
             represents = {}
         self.represents = represents
         self.datetime_format = datetime_format
+        self.already_visited = []
         self.used = used
 
     def _is_good_field(self, field, reprsnt, item, ignore):
@@ -107,7 +108,7 @@ class BaseKefir:
                         dct[field] = item
                     elif isinstance(item, Enum):
                         dct[field] = item.value
-                    elif isinstance(item, datetime.datetime):
+                    elif isinstance(item, (datetime.datetime, datetime.date)):
                         dct[field] = item.strftime(self.datetime_format)
                     else:
                         dct[field] = self.dump(item, obj)
@@ -120,6 +121,11 @@ class BaseKefir:
         return lst
 
     def dump(self, obj, ignore=None):
+        if obj in self.already_visited:
+            return None
+        
+        self.already_visited.append(obj)
+        
         if isinstance(obj, list):
             return self._dump_list(obj, ignore)
         return self._dump_obj(obj, ignore)

@@ -72,9 +72,9 @@ class BaseKefir:
         reprsnt = self.represents.get(type(obj))
         if hasattr(obj, "__slots__"):
             fields_list = obj.__slots__
-        else:
+        elif hasattr(obj, '__dict__'):
             # otherwise check if object is SQLAlchemy model
-            if hasattr(obj, '__dict__') and obj.__dict__.get("_sa_instance_state"):
+            if obj.__dict__.get("_sa_instance_state"):
                 fields_list = (
                     obj.__dict__["_sa_instance_state"]
                     .__dict__["manager"]
@@ -82,6 +82,8 @@ class BaseKefir:
                 ).keys()
             else:
                 fields_list = obj.__dict__.keys()
+        else:
+            return obj
         if reprsnt is not None:
             for field in fields_list:
                 item = getattr(obj, field)

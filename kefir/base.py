@@ -74,7 +74,7 @@ class BaseKefir:
             fields_list = obj.__slots__
         else:
             # otherwise check if object is SQLAlchemy model
-            if obj.__dict__.get("_sa_instance_state"):
+            if hasattr(obj, '__dict__') and obj.__dict__.get("_sa_instance_state"):
                 fields_list = (
                     obj.__dict__["_sa_instance_state"]
                     .__dict__["manager"]

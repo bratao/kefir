@@ -75,11 +75,20 @@ class BaseKefir:
         elif hasattr(obj, '__dict__'):
             # otherwise check if object is SQLAlchemy model
             if obj.__dict__.get("_sa_instance_state"):
-                fields_list = (
-                    obj.__dict__["_sa_instance_state"]
-                    .__dict__["manager"]
-                    .__dict__["local_attrs"]
-                ).keys()
+
+                if "manager" in obj.__dict__.get("_sa_instance_state").__dict__:
+                    fields_list = (
+                        obj.__dict__["_sa_instance_state"]
+                        .__dict__["manager"]
+                        .__dict__["local_attrs"]
+                    ).keys()
+                else: # Support SQLAlchemy 2
+                    fields_list = (
+                            obj.__dict__["_sa_instance_state"]
+                            .manager
+                            .__dict__["local_attrs"]
+                        ).keys()
+
             else:
                 fields_list = obj.__dict__.keys()
         else:
